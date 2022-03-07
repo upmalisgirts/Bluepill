@@ -53,7 +53,6 @@ uint8_t readSpi(uint8_t address);
 void configureBme();
 void measureBme();
 uint8_t * readCalibration();
-// uint8_t * tests();
 void clearRxBuffer();
 int calculateTFine(int adc_T, struct Compensation BME);
 int calculateTemperature(int adc_T, struct Compensation BME);
@@ -67,19 +66,12 @@ int main(void) {
     configureUsart1();
     configureSpi1();
     unselectSlave();
-   
-    // (*(volatile unsigned int *)(0x40011004)) &= ~(0x0F << (((14 - 8) * 4) -1)); //GPIO14_CRH RESET
-    // (*(volatile unsigned int *)(0x40011004)) |= (0x02 << (((14 - 8) * 4) + 2)); //GPIO14_CRH CNF
-    // (*(volatile unsigned int *)(0x40011004)) |= (0x00 << ((14 - 8) * 4)); //GPIO14_CRH MODE - SET INPUT
-    // (*(volatile unsigned int *)(0x40011010)) = (1 << 13); //GPIO13_BSRR
-    // int light = 0;
-
+    configureBme();
     struct Compensation BME;
 
     uint8_t h_lsb, h_msb, t_lsb, t_msb, t_xlsb, p_lsb, p_msb, p_xlsb;
     int adc_H, adc_T, adc_P, temperature, humidity, pressure;
     
-    configureBme();
     uint8_t * calibration;
     calibration = readCalibration();
     BME.dig_T1 = (*(calibration+1) << 8 | *(calibration));
@@ -233,9 +225,7 @@ uint8_t * readCalibration() {
 }
 
 void clearRxBuffer() {
-    // uint8_t buf_val;
     while (!(SPI1_SR & (1 << 0)));
-    // buf_val = SPI1_DR;
     SPI1_DR;
 }
 
